@@ -1,0 +1,75 @@
+version: "2"
+
+services:
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    restart: on-failure
+    # ports:
+    #   - "8086:8086"
+    #   - "8090:8090"
+    env_file:
+      - "./influxdb/env/env.influxdb"
+    volumes:
+      - "./data/influxdb:/var/lib/influxdb"
+      - "./influxdb/conf/influxdb.conf:/etc/influxdb/influxdb.conf:ro"
+    networks:
+      - tig-network
+
+  # # Define a service for using the influx CLI tool.
+  # # docker-compose -p smartplug run influxdb-cli
+  # influxdb-cli:
+  #   image: influxdb:latest
+  #   container_name: influxdb-cli
+  #   entrypoint:
+  #     - influx
+  #     - -host
+  #     - influxdb
+  #   depends_on:
+  #     - influxdb
+  #   networks:
+  #     - tig-network
+
+  # chronograf:
+  #   image: chronograf:latest
+  #   container_name: chronograf
+  #   ports:
+  #     - "8888:8888"
+  #   volumes:
+  #     - "./data/chronograf:/var/lib/chronograf"
+  #   depends_on:
+  #     - influxdb
+
+  telegraf:
+    image: telegraf:latest
+    container_name: telegraf
+    hostname: servers.hostname.com
+    volumes:
+      - "./telegraf/conf/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    depends_on:
+      - influxdb
+    networks:
+      - tig-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    env_file:
+      - "./grafana/env/env.grafana"
+    volumes:
+      # Database
+      - "./data/grafana:/var/lib/grafana"
+      # Provisioning
+      - "./grafana/conf/provisioning/:/etc/grafana/provisioning/"
+    # user: "1000"
+    depends_on:
+      - influxdb
+    networks:
+      - tig-network
+
+networks:
+  tig-network:
+    driver: bridge
