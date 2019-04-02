@@ -1,2 +1,5 @@
 .DS_Store
-data
+data/grafana/*
+!data/grafana/.gitignore
+data/influxdb/*
+!data/influxdb/.gitignore
