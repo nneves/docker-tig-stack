@@ -15,8 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 3,
-  "iteration": 1554220661066,
+  "iteration": 1554242522153,
   "links": [],
   "panels": [
     {
@@ -32,7 +31,7 @@
       "repeat": "hostname",
       "scopedVars": {
         "hostname": {
-          "selected": true,
+          "selected": false,
           "text": "7code.pt",
           "value": "7code.pt"
         }
@@ -82,9 +81,721 @@
       "repeatIteration": 1475510517173,
       "scopedVars": {
         "hostname": {
-          "selected": true,
+          "selected": false,
           "text": "7code.pt",
           "value": "7code.pt"
+        }
+      },
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "[$tag_host]",
+          "dsType": "influxdb",
+          "groupBy": [
+            {
+              "params": [
+                "host"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "docker_container_cpu",
+          "orderByTime": "ASC",
+          "policy": "autogen",
+          "query": "SELECT sum(\"usage_percent\") FROM \"autogen\".\"docker_container_cpu\" WHERE (\"cpu\" = 'cpu-total' AND \"host\" =~ /^$hostname$/ AND \"container_image\" =~ /^$docker_container_image$/) AND $timeFilter GROUP BY \"host\",  time(10s) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "usage_percent"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "cpu",
+              "operator": "=",
+              "value": "cpu-total"
+            },
+            {
+              "condition": "AND",
+              "key": "container_image",
+              "operator": "=~",
+              "value": "/^$influxdb_container_image$/"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "CPU (Sum)",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 2,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": "",
+          "logBase": 1,
+          "max": 100,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Telegraf",
+      "editable": true,
+      "error": false,
+      "fill": 1,
+      "grid": {},
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "height": "400px",
+      "id": 5,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "sortDesc": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "maxPerRow": 1,
+      "nullPointMode": "null as zero",
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "scopedVars": {
+        "hostname": {
+          "selected": false,
+          "text": "7code.pt",
+          "value": "7code.pt"
+        }
+      },
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "[$tag_host] $tag_container_image",
+          "dsType": "influxdb",
+          "groupBy": [
+            {
+              "params": [
+                "host"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "container_name"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "container_image"
+              ],
+              "type": "tag"
+            }
+          ],
+          "measurement": "docker_container_cpu",
+          "orderByTime": "ASC",
+          "policy": "autogen",
+          "query": "SELECT \"usage_percent\" FROM \"seven_days\".\"docker_container_cpu\" WHERE \"host\" =~ /^$influxdb_host$/ AND $timeFilter GROUP BY \"host\", \"container_name\"",
+          "rawQuery": false,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "usage_percent"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "cpu",
+              "operator": "=",
+              "value": "cpu-total"
+            },
+            {
+              "condition": "AND",
+              "key": "container_image",
+              "operator": "=~",
+              "value": "/^$docker_container_image$/"
+            },
+            {
+              "condition": "AND",
+              "key": "host",
+              "operator": "=~",
+              "value": "/^$hostname$/"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "CPU",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 2,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": "",
+          "logBase": 1,
+          "max": 100,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Telegraf",
+      "editable": true,
+      "error": false,
+      "fill": 1,
+      "grid": {},
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "height": "300px",
+      "id": 3,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "maxPerRow": 1,
+      "nullPointMode": "null as zero",
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "scopedVars": {
+        "hostname": {
+          "selected": false,
+          "text": "7code.pt",
+          "value": "7code.pt"
+        }
+      },
+      "seriesOverrides": [
+        {
+          "alias": "/MAX LIMIT.*/i",
+          "color": "#E24D42",
+          "fill": 0,
+          "lines": true
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "[$tag_host] $docker_container_image",
+          "dsType": "influxdb",
+          "groupBy": [
+            {
+              "params": [
+                "host"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "container_image"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "container_name"
+              ],
+              "type": "tag"
+            }
+          ],
+          "hide": false,
+          "measurement": "docker_container_mem",
+          "orderByTime": "ASC",
+          "policy": "seven_days",
+          "query": "SELECT sum(\"usage\") FROM \"telegraf\".\"autogen\".\"docker_container_mem\" WHERE \"host\" =~ /^$hostname$/  AND \"container_image\" =~ /^$docker_container_image$/ AND $timeFilter GROUP BY time(10s), \"host\" FILL(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "usage_percent"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "container_image",
+              "operator": "=~",
+              "value": "/^$influxdb_container_image$/"
+            }
+          ]
+        },
+        {
+          "alias": "MAX LIMIT: [$tag_host]",
+          "dsType": "influxdb",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT \"limit\" FROM \"autogen\".\"docker_container_mem\" WHERE \"host\" =~ /^$hostname$/ AND \"container_image\" =~ /^$docker_container_image$/ AND $timeFilter GROUP BY \"host\"",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "RAM (Sum)",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 2,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "bytes",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Telegraf",
+      "editable": true,
+      "error": false,
+      "fill": 1,
+      "grid": {},
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 27
+      },
+      "height": "400px",
+      "id": 4,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "maxPerRow": 1,
+      "nullPointMode": "null as zero",
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "scopedVars": {
+        "hostname": {
+          "selected": false,
+          "text": "7code.pt",
+          "value": "7code.pt"
+        }
+      },
+      "seriesOverrides": [
+        {
+          "alias": "/MAX LIMIT.*/i",
+          "color": "#E24D42",
+          "fill": 0,
+          "lines": true
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "MAX LIMIT: [$tag_host]",
+          "dsType": "influxdb",
+          "groupBy": [
+            {
+              "params": [
+                "host"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "container_image"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "container_name"
+              ],
+              "type": "tag"
+            }
+          ],
+          "hide": true,
+          "measurement": "docker_container_mem",
+          "orderByTime": "ASC",
+          "policy": "seven_days",
+          "query": "SELECT \"limit\" FROM \"autogen\".\"docker_container_mem\" WHERE \"host\" =~ /^$hostname$/ AND \"container_image\" =~ /^$docker_container_image$/ AND $timeFilter GROUP BY \"host\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "usage_percent"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "container_image",
+              "operator": "=~",
+              "value": "/^$influxdb_container_image$/"
+            }
+          ]
+        },
+        {
+          "alias": "[$tag_host] $tag_container_image",
+          "dsType": "influxdb",
+          "groupBy": [
+            {
+              "params": [
+                "host"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "container_image"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "container_name"
+              ],
+              "type": "tag"
+            }
+          ],
+          "hide": false,
+          "measurement": "docker_container_mem",
+          "orderByTime": "ASC",
+          "policy": "seven_days",
+          "query": "SELECT \"usage\" FROM \"telegraf\".\"autogen\".\"docker_container_mem\" WHERE \"host\" =~ /^$hostname$/ AND \"container_image\" =~ /^$docker_container_image$/ AND $timeFilter GROUP BY \"host\", \"container_image\", \"container_name\"",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "usage_percent"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "container_image",
+              "operator": "=~",
+              "value": "/^$influxdb_container_image$/"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "RAM",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 2,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "bytes",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 8,
+      "panels": [],
+      "repeat": null,
+      "repeatIteration": 1554242522153,
+      "repeatPanelId": 7,
+      "scopedVars": {
+        "hostname": {
+          "selected": false,
+          "text": "servers.hostname.com",
+          "value": "servers.hostname.com"
+        }
+      },
+      "title": "$hostname [Docker Container STATS]",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Telegraf",
+      "editable": true,
+      "error": false,
+      "fill": 1,
+      "grid": {},
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 38
+      },
+      "height": "300px",
+      "id": 9,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "sortDesc": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "maxPerRow": 1,
+      "nullPointMode": "null as zero",
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "repeatIteration": 1554242522153,
+      "repeatPanelId": 1,
+      "repeatedByRow": true,
+      "scopedVars": {
+        "hostname": {
+          "selected": false,
+          "text": "servers.hostname.com",
+          "value": "servers.hostname.com"
         }
       },
       "seriesOverrides": [],
@@ -201,10 +912,10 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 46
       },
       "height": "400px",
-      "id": 5,
+      "id": 10,
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -226,11 +937,14 @@
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
+      "repeatIteration": 1554242522153,
+      "repeatPanelId": 5,
+      "repeatedByRow": true,
       "scopedVars": {
         "hostname": {
-          "selected": true,
-          "text": "7code.pt",
-          "value": "7code.pt"
+          "selected": false,
+          "text": "servers.hostname.com",
+          "value": "servers.hostname.com"
         }
       },
       "seriesOverrides": [],
@@ -349,10 +1063,10 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 56
       },
       "height": "300px",
-      "id": 3,
+      "id": 11,
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -373,11 +1087,14 @@
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
+      "repeatIteration": 1554242522153,
+      "repeatPanelId": 3,
+      "repeatedByRow": true,
       "scopedVars": {
         "hostname": {
-          "selected": true,
-          "text": "7code.pt",
-          "value": "7code.pt"
+          "selected": false,
+          "text": "servers.hostname.com",
+          "value": "servers.hostname.com"
         }
       },
       "seriesOverrides": [
@@ -537,10 +1254,10 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 64
       },
       "height": "400px",
-      "id": 4,
+      "id": 12,
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -561,11 +1278,14 @@
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
+      "repeatIteration": 1554242522153,
+      "repeatPanelId": 4,
+      "repeatedByRow": true,
       "scopedVars": {
         "hostname": {
-          "selected": true,
-          "text": "7code.pt",
-          "value": "7code.pt"
+          "selected": false,
+          "text": "servers.hostname.com",
+          "value": "servers.hostname.com"
         }
       },
       "seriesOverrides": [
@@ -731,8 +1451,11 @@
       {
         "allValue": null,
         "current": {
-          "text": "7code.pt",
-          "value": "7code.pt"
+          "tags": [],
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": "Telegraf",
         "definition": "SHOW TAG VALUES ON \"telegraf\" FROM \"mem\" WITH KEY = \"host\"",
@@ -756,9 +1479,8 @@
       {
         "allValue": null,
         "current": {
-          "text": "chronograf + grafana/grafana + influxdb + telegraf",
+          "text": "grafana/grafana + influxdb + telegraf",
           "value": [
-            "chronograf",
             "grafana/grafana",
             "influxdb",
             "telegraf"
@@ -817,5 +1539,5 @@
   "timezone": "browser",
   "title": "Docker Containers Overview",
   "uid": "000000003",
-  "version": 32
+  "version": 1
 }
