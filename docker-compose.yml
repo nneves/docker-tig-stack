@@ -52,23 +52,10 @@ services:
     networks:
       - tig-network
 
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    env_file:
-      - "./grafana/env/env.grafana"
-    volumes:
-      # Database
-      - "./data/grafana:/var/lib/grafana"
-      # Provisioning
-      - "./grafana/conf/provisioning/:/etc/grafana/provisioning/"
-    # user: "1000"
-    depends_on:
-      - influxdb
-    networks:
-      - tig-network
+  # grafana:
+  # * NORMAL MODE: docker-compose.override.yml
+  # * PROVISIONING MODE: docker-compose.develop.yml
+  #
 
 networks:
   tig-network:

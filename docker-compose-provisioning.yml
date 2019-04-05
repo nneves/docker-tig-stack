@@ -1,0 +1,22 @@
+version: "2"
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    env_file:
+      - "./grafana/env/env.grafana"
+    volumes:
+      # Database
+      - "./data/grafana:/var/lib/grafana"
+      # Provisioning
+      - "./grafana/conf/provisioning/:/etc/grafana/provisioning/"
+    # user: "1000"
+    networks:
+      - tig-network
+
+networks:
+  tig-network:
+    driver: bridge
