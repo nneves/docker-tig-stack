@@ -43,7 +43,7 @@ services:
   telegraf:
     image: telegraf:latest
     container_name: telegraf
-    hostname: servers.hostname.com
+    hostname: $HOST_NAME
     volumes:
       - "./telegraf/conf/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -60,9 +60,8 @@ services:
     env_file:
       - "./grafana/env/env.grafana"
     volumes:
-      # Database
       - "./data/grafana:/var/lib/grafana"
-    # user: "1000"
+    user: "$USER_ID"
     depends_on:
       - influxdb
     networks:

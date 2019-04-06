@@ -7,12 +7,20 @@ RETURN_SUCCESS=0;
 RETURN_ERROR=1;
 
 # --------------------------------------------------------------------------
+# SYSTEM ENV VARS: required for docker-compose
+# --------------------------------------------------------------------------
+export HOST_NAME=$HOSTNAME;
+export USER_ID=$UID;
+echo "------------------------------------------------------------";
+echo "HOST_NAME=$HOST_NAME, USER_ID=$USER_ID";
+echo "------------------------------------------------------------";
+# --------------------------------------------------------------------------
 # check if not arguments are set, prints help
 # --------------------------------------------------------------------------
 if [[ $# -eq 0 || "$1" =  "help" || "$1" =  "--help" ]]
 then
     echo "Usage: $0 [Options]";
-    echo "setup";
+    echo "config";
     echo "reset-data";
     echo "up";
     echo "down";
@@ -30,11 +38,11 @@ fi
 ARGS_LINES=$(echo $@ | tr " " "\n" | tr A-Z a-z);
 
 #  check for options
-SETUP=0;
-if [[ $(echo $ARGS_LINES | grep "setup") ]]
+CONFIG=0;
+if [[ $(echo $ARGS_LINES | grep "config") ]]
 then
-    echo "Option: setup [ACTIVE]";
-    SETUP=1;
+    echo "Option: config [ACTIVE]";
+    CONFIG=1;
 fi
 
 RESET_DATA=0;
@@ -111,18 +119,62 @@ then
         [Yy]* ) docker-compose down;
                 rm -rf data/grafana/*;
                 rm -rf data/influxdb/*;
-                exit $RETURN_SUCCESS;
             ;;
-        [Nn]* ) exit $RETURN_ERROR;;
+        [Nn]* ) echo "Operation CANCELED!"; exit $RETURN_ERROR;;
     esac
 fi
 
-# setup
-if [[ "$SETUP" = "1" ]]
+# config
+if [[ "$CONFIG" = "1" ]]
 then
     echo "------------------------------------------------------------";
-    echo "Setup";
+    echo "Config";
     echo "------------------------------------------------------------";
+
+    read -p "Do you want to setup a new admin password for Grafana (y/n)?" yn;
+    case $yn in
+        [Yy]* ) ;;
+        * ) echo "Operation CANCELED!"; exit $RETURN_ERROR;;
+    esac
+    echo "Please insert the new admin password for Grafana:";
+    read -p "GF_SECURITY_ADMIN_PASSWORD=" admin_pw;
+    if [[ -z "$admin_pw" ]]
+    then
+        echo "Empty password not allowed!";
+        exit $RETURN_ERROR;
+    fi
+
+    GRAFANA_ENV_FILE=./grafana/env/env.grafana;
+    GRAFANA_ENV_PW_LINE=$(cat $GRAFANA_ENV_FILE | grep -n "GF_SECURITY_ADMIN_PASSWORD" | grep -Eo '^[^:]+');
+    if [[ ! -z "$GRAFANA_ENV_PW_LINE" ]]
+    then
+        echo "Deleting \"GF_SECURITY_ADMIN_PASSWORD\" from $GRAFANA_ENV_FILE";
+        sed -i -e "${GRAFANA_ENV_PW_LINE}d" $GRAFANA_ENV_FILE;
+    fi
+    echo "GF_SECURITY_ADMIN_PASSWORD=$admin_pw" >> $GRAFANA_ENV_FILE;
+
+    # check if grafana.db already exists, if so will need to run `reset-admin-password` command
+    if [[ -f ./data/grafana/grafana.db ]]
+    then
+        echo "------------------------------------------------------------";
+        echo "Grafana \"reset-admin-password\"";
+        echo "------------------------------------------------------------";
+        if [[ "$(docker inspect -f {{.State.Running}} grafana 2>/dev/null)" == "true" ]]
+        then
+            echo "Grafana container already running, executing command: grafana-cli admin reset-admin-password";
+            docker exec -it grafana grafana-cli admin reset-admin-password $admin_pw;
+        else
+            echo "Grafana container not running, launch new container using entrypoint command";
+            docker run \
+                -p 3000:3000 \
+                --volume "$PWD/data/grafana:/var/lib/grafana" \
+                --env-file "$PWD/grafana/env/env.grafana" \
+                --user "$USER_ID" \
+                --entrypoint "/usr/share/grafana/bin/grafana-cli" \
+                --name grafana \
+                --rm grafana/grafana:latest admin reset-admin-password $admin_pw;
+        fi
+    fi
 fi
 
 # provisioning
@@ -131,11 +183,11 @@ then
     echo "------------------------------------------------------------";
     echo "Grafana Provisioning";
     echo "------------------------------------------------------------";
-#        --user "1000" \
     docker run -d \
         --volume "$PWD/data/grafana:/var/lib/grafana" \
         --volume "$PWD/grafana/conf/provisioning/:/etc/grafana/provisioning/" \
         --env-file "$PWD/grafana/env/env.grafana" \
+        --user "$USER_ID" \
         --name grafana_provisioning \
         --rm grafana/grafana:latest;
 
