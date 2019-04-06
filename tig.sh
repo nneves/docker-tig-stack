@@ -151,6 +151,7 @@ then
         echo "Deleting \"GF_SECURITY_ADMIN_PASSWORD\" from $GRAFANA_ENV_FILE";
         sed -i -e "${GRAFANA_ENV_PW_LINE}d" $GRAFANA_ENV_FILE;
     fi
+    echo "Adding new grafana admin password GF_SECURITY_ADMIN_PASSWORD=$admin_pw to $GRAFANA_ENV_FILE";
     echo "GF_SECURITY_ADMIN_PASSWORD=$admin_pw" >> $GRAFANA_ENV_FILE;
 
     # check if grafana.db already exists, if so will need to run `reset-admin-password` command
