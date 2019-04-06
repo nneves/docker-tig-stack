@@ -13,6 +13,7 @@ if [[ $# -eq 0 || "$1" =  "help" || "$1" =  "--help" ]]
 then
     echo "Usage: $0 [Options]";
     echo "setup";
+    echo "reset-data";
     echo "up";
     echo "down";
     echo "logs";
@@ -34,6 +35,13 @@ if [[ $(echo $ARGS_LINES | grep "setup") ]]
 then
     echo "Option: setup [ACTIVE]";
     SETUP=1;
+fi
+
+RESET_DATA=0;
+if [[ $(echo $ARGS_LINES | grep "reset-data") ]]
+then
+    echo "Option: reset-data [ACTIVE]";
+    RESET_DATA=1;
 fi
 
 SERVICE_UP=0;
@@ -92,6 +100,23 @@ then
     docker-compose -f docker-compose.yml ps;
 fi
 
+# reset-data
+if [[ "$RESET_DATA" = "1" ]]
+then
+    echo "------------------------------------------------------------";
+    echo "Reset Data";
+    echo "------------------------------------------------------------";
+    read -p "Do you want to delete InfluxDB and Grafana local \"data\" (y/n)?" yn;
+    case $yn in
+        [Yy]* ) docker-compose down;
+                rm -rf data/grafana/*;
+                rm -rf data/influxdb/*;
+                exit $RETURN_SUCCESS;
+            ;;
+        [Nn]* ) exit $RETURN_ERROR;;
+    esac
+fi
+
 # setup
 if [[ "$SETUP" = "1" ]]
 then
@@ -106,9 +131,16 @@ then
     echo "------------------------------------------------------------";
     echo "Grafana Provisioning";
     echo "------------------------------------------------------------";
-    docker-compose -f docker-compose-provisioning.yml up -d;
+#        --user "1000" \
+    docker run -d \
+        --volume "$PWD/data/grafana:/var/lib/grafana" \
+        --volume "$PWD/grafana/conf/provisioning/:/etc/grafana/provisioning/" \
+        --env-file "$PWD/grafana/env/env.grafana" \
+        --name grafana_provisioning \
+        --rm grafana/grafana:latest;
+
     # wait for grafana to terminate provisioning procedure
-    docker-compose logs -f grafana | {
+    docker logs -f grafana_provisioning | {
         while IFS= read -r logline
         do
             echo "$logline";
@@ -119,12 +151,13 @@ then
             fi;
         done;
     }
-    docker-compose -f docker-compose-provisioning.yml down;
+    docker stop grafana_provisioning;
     # need to remove the imported dashboards from the sqlite3 grafana.db database
     # in order for the user to be able to edit and save in the normal way
-    echo "Opening Grafana.db sqlite3 database to delete `dashboard_provisioning` data (will allow user to edit/save imported Dashboards)";
-    docker run --volume "$PWD/data/grafana/grafana.db:/grafana.db" \
-        --rm -it nouchka/sqlite3 /grafana.db 'DELETE FROM `dashboard_provisioning` WHERE id>0;'
+    echo "Opening Grafana.db sqlite3 database to delete \"dashboard_provisioning\" data (will allow user to edit/save imported Dashboards)";
+    docker run \
+        --volume "$PWD/data/grafana/grafana.db:/grafana.db" \
+        --rm -it nouchka/sqlite3 /grafana.db 'DELETE FROM `dashboard_provisioning` WHERE id>0;';
 fi
 
 # docker-compose up
