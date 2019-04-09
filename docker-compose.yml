@@ -44,6 +44,7 @@ services:
     image: telegraf:latest
     container_name: telegraf
     hostname: $HOST_NAME
+    restart: on-failure
     environment:
       HOST_PROC: "/rootfs/proc"
       HOST_SYS: "/rootfs/sys"
@@ -63,6 +64,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
+    restart: on-failure
     ports:
       - "3000:3000"
     env_file:
