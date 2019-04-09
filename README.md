@@ -1,5 +1,11 @@
 # [TIG] Telegram + InfluxDB + Grafana
 
+[TIG] Telegram + InfluxDB + Grafana Stack basic setup to collect metrics on a Linux server:
+
+* Telegraf: data collector
+* IngluxDB: timeseries database
+* Grafana: data visualization
+
 ## TL;DR
 
 long story short:
@@ -49,11 +55,18 @@ Hit CTRL+C to exist logs, down command should still run.
 
 ## Complete walkthrough
 
-[TIG] Telegram + InfluxDB + Grafana Stack basic setup to collect metrics on a Linux server:
+The objective for the current TIG stack came from the necessity of composing a simple and generic boilerplate to collect and visualize metrics (host/server resources and docker containers) for a Linux server. I kept on having this loose and decoupled parts form previous projects, but ended up re-inventing the recipe all over again.
+
+About the TIG stack, Telegram + InfluxDB + Grafana:
 
 * Telegraf: data collector
 * IngluxDB: timeseries database
 * Grafana: data visualization
+
+Why not use the full complete TICK stack. Telegram + InfluxDB + Chronograf + Kapacitor ?
+Sure, `chronograf` is already commented out in the docker-compose, Kapacitor should be easy to setup ... I have been hooked to Grafana for a while, so it's easier to maintain motivation, no other reason!
+
+Let's get started ...
 
 ### 1. Initial setup
 
