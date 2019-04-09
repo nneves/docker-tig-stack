@@ -44,9 +44,17 @@ services:
     image: telegraf:latest
     container_name: telegraf
     hostname: $HOST_NAME
+    environment:
+      HOST_PROC: "/rootfs/proc"
+      HOST_SYS: "/rootfs/sys"
+      HOST_ETC: "/rootfs/etc"
     volumes:
       - "./telegraf/conf/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/sys:/rootfs/sys:ro"
+      - "/proc:/rootfs/proc:ro"
+      - "/etc:/rootfs/etc:ro"
+      - "/:/rootfs/root:ro"
     depends_on:
       - influxdb
     networks:
