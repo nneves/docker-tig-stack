@@ -55,7 +55,7 @@ Hit CTRL+C to exist logs, down command should still run.
 
 ## Complete walkthrough
 
-The objective for the current TIG stack came from the necessity of composing a simple and generic boilerplate to collect and visualize metrics (host/server resources and docker containers) for a Linux server. I kept on having this loose and decoupled parts form previous projects, but ended up re-inventing the recipe all over again.
+The objective for the current TIG stack came from the necessity of composing a simple and generic boilerplate to collect and visualize metrics (host/server resources and docker containers) for a Linux server. I kept on having this loose and decoupled parts from previous projects, but ended up re-inventing the recipe all over again.
 
 About the TIG stack, Telegram + InfluxDB + Grafana:
 
