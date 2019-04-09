@@ -3,7 +3,7 @@
 ## TL;DR
 
 long story short:
-* initial setup
+* initial setup (required once)
 
 ```bash
 ./tig.sh config
